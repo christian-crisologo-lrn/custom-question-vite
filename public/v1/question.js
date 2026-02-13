@@ -40,7 +40,7 @@ class QuestionV1 {
     }
     
     container.innerHTML = `
-      <div>
+      <div class="lrn_response_input">
         ${
           this.init.state === "review"
             ? `
@@ -89,6 +89,21 @@ class QuestionV1 {
       this.events.trigger("resetResponse");
 
       this.renderComponent({ resetState: "reset" });
+    };
+
+    facade.showValidationUI = () => {
+        const inputContainer = this.el.querySelector(".lrn_response_input");
+        if (facade.isValid()) {
+            inputContainer.classList.add("lrn_correct");
+        } else {
+            inputContainer.classList.add("lrn_incorrect");
+        }
+    };
+    
+    facade.resetValidationUI = () => {
+        const inputContainer = this.el.querySelector(".lrn_response_input");
+        inputContainer.classList.remove("lrn_correct", "lrn_incorrect");
+        this.suggestedAnswersList.reset();
     };
   }
 
