@@ -119,6 +119,7 @@ class QuestionV1 {
 
     events.on("validate", () => {
       const isValid = facade.isValid();
+      facade.showValidationUI();
 
       this.renderComponent({
         validationUIState: isValid ? "correct" : "incorrect",
