@@ -40,17 +40,19 @@ class QuestionV1 {
     }
     
     container.innerHTML = `
-      <div class="lrn_response_input">
-        ${
-          this.init.state === "review"
-            ? `
-          <div>
-            <div>given answer: ${this.init.response}</div>
-            <div>correct answer: ${validResponseValue}</div>
-          </div>
-        `
-            : `<input type="text">`
-        }
+      <div class="lrn-custom-question">
+        <div class="lrn_response_input lrn-response-validation-wrapper">
+          ${
+            this.init.state === "review"
+              ? `
+            <div>
+              <div>given answer: ${this.init.response}</div>
+              <div>correct answer: ${validResponseValue}</div>
+            </div>
+          `
+              : `<input type="text">`
+          }
+        </div>
       </div>
     `;
 
