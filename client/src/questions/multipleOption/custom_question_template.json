@@ -1,0 +1,29 @@
+{
+  "multiple-option": [
+    {
+      "name": "Multiple Option",
+      "description": "Select one or more options",
+      "group_reference": "other",
+      "defaults": {
+        "type": "custom",
+        "multiple_response": true,
+        "js": {
+          "question": "{BASE_URL}/questions/multipleOption/question.js",
+          "scorer": "{BASE_URL}/questions/multipleOption/scorer.js"
+        },
+        "options": [
+          { "id": "A", "label": "Option A" },
+          { "id": "B", "label": "Option B" },
+          { "id": "C", "label": "Option C" },
+          { "id": "D", "label": "Option D" }
+        ],
+        "validation": {
+          "valid_response": {
+            "score": 1,
+            "value": ["A"]
+          }
+        }
+      }
+    }
+  ]
+}

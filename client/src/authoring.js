@@ -1,17 +1,37 @@
 import { signLearnosityRequest } from "./signLearnosityRequest";
 import { loadScript } from "./loadScript";
 import { getScriptUrl, getBaseUrl } from "./util";
-import questionTypeJson from "./questions/customInput/custom_question_type.json";
-import questionTemplateJson from "./questions/customInput/custom_question_template.json";
+
+const questionTypeModules = import.meta.glob("./questions/*/custom_question_type.json", {
+  eager: true,
+});
+
+const questionTemplateModules = import.meta.glob("./questions/*/custom_question_template.json", {
+  eager: true,
+});
 
 function replaceBaseUrl(json, baseUrl) {
   return JSON.parse(JSON.stringify(json).split("{BASE_URL}").join(baseUrl));
 }
 
+function getModuleDefault(module) {
+  return module && typeof module === "object" && "default" in module ? module.default : module;
+}
+
 function getLearnosityRequest() {
   const baseUrl = getBaseUrl();
-  const questionType = replaceBaseUrl(questionTypeJson, baseUrl);
-  const questionTemplate = replaceBaseUrl(questionTemplateJson, baseUrl);
+  const customQuestionTypes = Object.keys(questionTypeModules)
+    .sort()
+    .map((path) => replaceBaseUrl(getModuleDefault(questionTypeModules[path]), baseUrl));
+
+  const questionTypeTemplates = Object.keys(questionTemplateModules)
+    .sort()
+    .reduce((acc, path) => {
+      return {
+        ...acc,
+        ...replaceBaseUrl(getModuleDefault(questionTemplateModules[path]), baseUrl),
+      };
+    }, {});
 
   return {
     mode: "activity_list",
@@ -27,8 +47,8 @@ function getLearnosityRequest() {
       dependencies: {
         question_editor_api: {
           init_options: {
-            custom_question_types: [questionType],
-            question_type_templates: { ...questionTemplate },
+            custom_question_types: customQuestionTypes,
+            question_type_templates: questionTypeTemplates,
           },
         },
       },

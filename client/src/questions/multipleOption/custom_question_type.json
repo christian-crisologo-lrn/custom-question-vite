@@ -1,0 +1,51 @@
+{
+  "custom_type": "multiple-option",
+  "type": "custom",
+  "name": "multiple-option",
+  "editor_layout": "{BASE_URL}/questions/multipleOption/authoring_custom_layout.html",
+  "js": {
+    "question": "{BASE_URL}/questions/multipleOption/question.js",
+    "scorer": "{BASE_URL}/questions/multipleOption/scorer.js"
+  },
+  "version": "v1.0.0",
+  "editor_schema": {
+    "hidden_question": false,
+    "attributes": {
+      "multiple_response": {
+        "name": "Allow multiple selections",
+        "description": "When enabled, learners can choose more than one option.",
+        "type": "boolean",
+        "required": false,
+        "default": true
+      },
+      "options": {
+        "name": "Options",
+        "type": "array"
+      },
+      "validation": {
+        "type": "object",
+        "name": "Set Correct Answer(s)",
+        "attributes": {
+          "valid_response": {
+            "name": "Attribute used for scoring",
+            "type": "object",
+            "attributes": {
+              "score": {
+                "name": "Score for correct answer",
+                "description": "Score awarded when all correct options are selected.",
+                "type": "number",
+                "required": true,
+                "default": 1
+              },
+              "value": {
+                "name": "Correct option ids",
+                "required": true,
+                "type": "array"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

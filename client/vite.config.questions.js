@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { copyFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_ROOT = resolve(ROOT, '..', 'public');
@@ -14,6 +14,8 @@ const PUBLIC_ROOT = resolve(ROOT, '..', 'public');
 const ENTRIES = {
   'questions/customInput/question': 'src/questions/customInput/question.js',
   'questions/customInput/scorer': 'src/questions/customInput/scorer.js',
+  'questions/multipleOption/question': 'src/questions/multipleOption/question.js',
+  'questions/multipleOption/scorer': 'src/questions/multipleOption/scorer.js',
 };
 
 const entryName = process.env.QUESTION_ENTRY;
@@ -24,6 +26,7 @@ if (!entryName || !ENTRIES[entryName]) {
 }
 
 const outputFileName = `${entryName}.js`;
+const questionTypeDir = entryName.substring(0, entryName.lastIndexOf('/'));
 
 export default defineConfig({
   root: ROOT,
@@ -42,16 +45,22 @@ export default defineConfig({
     {
       name: 'copy-question-assets',
       closeBundle() {
-        const src = resolve(ROOT, 'src/questions/customInput/authoring_custom_layout.html');
-        const destDir = resolve(ROOT, 'dist/questions/test');
-        mkdirSync(destDir, { recursive: true });
-        copyFileSync(src, resolve(destDir, 'authoring_custom_layout.html'));
+        const sourceLayoutPath = resolve(ROOT, 'src', questionTypeDir, 'authoring_custom_layout.html');
+        if (existsSync(sourceLayoutPath)) {
+          const distLayoutDir = resolve(ROOT, 'dist', questionTypeDir);
+          const publicLayoutDir = resolve(PUBLIC_ROOT, questionTypeDir);
+          mkdirSync(distLayoutDir, { recursive: true });
+          mkdirSync(publicLayoutDir, { recursive: true });
+          copyFileSync(sourceLayoutPath, resolve(distLayoutDir, 'authoring_custom_layout.html'));
+          copyFileSync(sourceLayoutPath, resolve(publicLayoutDir, 'authoring_custom_layout.html'));
+        }
 
-        const publicQuestionDir = resolve(PUBLIC_ROOT, 'questions/customInput');
+        const publicAssetPath = resolve(PUBLIC_ROOT, outputFileName);
+        const publicQuestionDir = resolve(PUBLIC_ROOT, questionTypeDir);
         mkdirSync(publicQuestionDir, { recursive: true });
         copyFileSync(
           resolve(ROOT, 'dist', outputFileName),
-          resolve(PUBLIC_ROOT, outputFileName)
+          publicAssetPath
         );
       },
     },

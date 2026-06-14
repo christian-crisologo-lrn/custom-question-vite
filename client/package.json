@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npm run build:app && npm run build:questions",
     "build:app": "vite build",
-    "build:questions": "QUESTION_ENTRY=questions/customInput/question vite build --config vite.config.questions.js && QUESTION_ENTRY=questions/customInput/scorer vite build --config vite.config.questions.js",
+    "build:questions": "QUESTION_ENTRY=questions/customInput/question vite build --config vite.config.questions.js && QUESTION_ENTRY=questions/customInput/scorer vite build --config vite.config.questions.js && QUESTION_ENTRY=questions/multipleOption/question vite build --config vite.config.questions.js && QUESTION_ENTRY=questions/multipleOption/scorer vite build --config vite.config.questions.js",
     "preview": "vite preview"
   },
   "devDependencies": {
