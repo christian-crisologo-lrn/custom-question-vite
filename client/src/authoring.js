@@ -1,8 +1,8 @@
 import { signLearnosityRequest } from "./signLearnosityRequest";
 import { loadScript } from "./loadScript";
 import { getScriptUrl, getBaseUrl } from "./util";
-import questionTypeJson from "./questions/test/CustomQuestionType.json";
-import questionTemplateJson from "./questions/test/QuestionTypeTemplate.json";
+import questionTypeJson from "./questions/customInput/custom_question_type.json";
+import questionTemplateJson from "./questions/customInput/custom_question_template.json";
 
 function replaceBaseUrl(json, baseUrl) {
   return JSON.parse(JSON.stringify(json).split("{BASE_URL}").join(baseUrl));

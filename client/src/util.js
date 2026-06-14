@@ -1,5 +1,6 @@
 // Constants
-export const BASE_URL = "https://christian-crisologo-lrn.github.io/lrn48922-custom-question";
+export const REPO_NAME = "simple-custom-question";
+export const BASE_URL = `https://christian-crisologo-lrn.github.io/${REPO_NAME}`;
 export const USER_ID = "labs-site";
 
 // Environment configuration for Learnosity APIs
@@ -27,24 +28,28 @@ const ENV_CONFIG = {
 // Get query parameter value from URL
 export function getQueryParam(param) {
   const urlParams = new URLSearchParams(window.location.search);
+
   return urlParams.get(param);
 }
 
 // Get environment configuration based on query parameter
 export function getEnvConfig() {
   const env = getQueryParam("env") || "prod";
+
   return ENV_CONFIG[env] || ENV_CONFIG.prod;
 }
 
 // Get the script URL for a specific Learnosity API
 export function getScriptUrl(api) {
   const config = getEnvConfig();
+
   return config[api] || config.items;
 }
 
 // Get the base URL for custom question resources
 export function getBaseUrl() {
   const config = getEnvConfig();
+
   return config.baseUrl;
 }
 
@@ -54,14 +59,18 @@ export function getActivityTemplateId() {
 }
 
 export function getIgnoreQuestionAttributes() {
-  let ignoreQuestionAttr = [];
   const ignore = getQueryParam('ignore');
 
-  if ( ignore === '1' || ignore === 'valid_response') {
-   ignoreQuestionAttr.push('valid_response')
-  } else if ( ignore.indexOf(',') > -1 && ignore.length > 0) {
-    ignore.split(',').forEach(attr => ignoreQuestionAttr.push(attr.trim()));
+  if (!ignore) {
+    return [];
   }
 
-  return ignoreQuestionAttr;
+  if (ignore === '1' || ignore === 'valid_response') {
+    return ['valid_response'];
+  }
+
+  return ignore
+    .split(',')
+    .map((attr) => attr.trim())
+    .filter(Boolean);
 }

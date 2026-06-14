@@ -10,10 +10,14 @@ const DEFAULT = {
   LEARNOSITY_CONSUMER_KEY: 'yis0TYCu7U9V4o7M',
   LEARNOSITY_SECRET: '74c5fd430cf1242a527f6223aebd42d30464be22',
   LEARNOSITY_DOMAIN: 'localhost',
-  CORS_ORIGINS: 'http://localhost:8080,http://localhost:8081,http://localhost:3000',
+  CORS_ORIGINS: 'http://localhost:8081,http://localhost:3000',
 }
 
-const CORS_ORIGINS = DEFAULT.CORS_ORIGINS.split(',');
+function parseOrigins(origins) {
+  return [...new Set(origins.split(',').map((origin) => origin.trim()).filter(Boolean))];
+}
+
+const CORS_ORIGINS = parseOrigins(DEFAULT.CORS_ORIGINS);
 /**
  * Get the server port from environment variable or default
  * @returns {number} The port number
@@ -71,8 +75,8 @@ function getLearnosityDomain() {
  * @returns {object} CORS options
  */
 function getCorsOptions() {
-  const allowedOrigins = process.env.CORS_ORIGINS 
-    ? process.env.CORS_ORIGINS.split(',')
+  const allowedOrigins = process.env.CORS_ORIGINS
+    ? parseOrigins(process.env.CORS_ORIGINS)
     : CORS_ORIGINS;
   
   return {

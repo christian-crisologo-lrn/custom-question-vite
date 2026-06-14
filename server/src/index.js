@@ -7,11 +7,12 @@ const {
   getServerUrl,
   getLearnosityCredentials,
   getLearnosityDomain,
+  getCorsOptions,
 } = require('./config');
 
 const app = express();
 
-app.use(cors());
+app.use(cors(getCorsOptions()));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

@@ -1,46 +1,39 @@
-const LRN_CQ_PREFIX3 = "lrn-test-question-v3";
+const LRN_CQ_PREFIX = "lrn-custom-input";
 
-class QuestionV3{
-  constructor(init, lrnUtils) {
-    this.init = init;
-    this.events = init.events;
-    this.lrnUtils = lrnUtils;
-    this.el = init.$el.get(0);
-    this.componentStates = {};
+function CustomInput(init, lrnUtils) {
+  this.init = init;
+  this.events = init.events;
+  this.lrnUtils = lrnUtils;
+  this.el = init.$el.get(0);
+  this.componentStates = {};
 
-    this.render().then(() => {
-      this.registerPublicMethods();
-      this.registerEventsListener();
+  this.render().then(() => {
+    this.registerPublicMethods();
+    this.registerEventsListener();
 
-      if (init.state === "review") {
-        init.getFacade().disable();
-      }
+    if (init.state === "review") {
+      init.getFacade().disable();
+    }
 
-      init.events.trigger("ready");
-    });
-  }
+    init.events.trigger("ready");
+  });
+}
 
+CustomInput.prototype = {
   render() {
     this.el.innerHTML = `
-      <div class="${LRN_CQ_PREFIX3} lrn-response-validation-wrapper">
-        <div class="${LRN_CQ_PREFIX3}-root"></div>
+      <div class="${LRN_CQ_PREFIX} lrn-response-validation-wrapper">
+        <div class="${LRN_CQ_PREFIX}-root"></div>
       </div>
     `;
 
     return Promise.all([]).then(() => {
       this.renderComponent();
     });
-  }
+  },
 
   renderComponent(options = {}) {
-    const container = this.el.querySelector(`.${LRN_CQ_PREFIX3}-root`);
-
-    let validResponseValue = "";
-    if (this.init.question?.validation?.valid_response) {
-      validResponseValue = this.init.question.validation.valid_response.value;
-    } else if (this.init.question?.valid_response) {
-      validResponseValue = this.init.question.valid_response.value;
-    }
+    const container = this.el.querySelector(`.${LRN_CQ_PREFIX}-root`);
 
     container.innerHTML = `
       <div>
@@ -49,7 +42,7 @@ class QuestionV3{
             ? `
           <div>
             <div>given answer: ${this.init.response}</div>
-            <div>correct answer: ${validResponseValue}</div>
+            <div>correct answer: ${this.init.question?.validation?.valid_response?.value}</div>
           </div>
         `
             : `<input type="text">`
@@ -62,21 +55,21 @@ class QuestionV3{
         this.onValueChange(event.target.value);
       });
     }
-  }
+  },
 
-  onValueChange = (value) => {
+  onValueChange(value) {
     if (this.componentStates.resetState) {
       this.renderComponent({ resetState: "attemptedAfterReset" });
     }
 
     this.events.trigger("changed", value);
-  };
+  },
 
-  resetValidationUIState = () => {
+  resetValidationUIState() {
     this.renderComponent({
       validationUIState: "",
     });
-  };
+  },
 
   registerPublicMethods() {
     const facade = this.init.getFacade();
@@ -93,11 +86,11 @@ class QuestionV3{
 
       this.renderComponent({ resetState: "reset" });
     };
-  }
+  },
 
   registerEventsListener() {
     this.onValidateListener();
-  }
+  },
 
   onValidateListener() {
     const facade = this.init.getFacade();
@@ -110,9 +103,11 @@ class QuestionV3{
         validationUIState: isValid ? "correct" : "incorrect",
       });
     });
-  }
-}
+  },
+};
+
+CustomInput.prototype.constructor = CustomInput;
 
 LearnosityAmd.define([], () => ({
-  Question: QuestionV3
+  Question: CustomInput,
 }));

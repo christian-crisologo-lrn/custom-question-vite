@@ -1,10 +1,10 @@
-class TestQuestionScorer {
-  constructor(question, responseValue) {
-    this.question = question;
-    this.responseValue = responseValue;
-    this.validResponse = this.question?.validation?.valid_response;
-  }
+function TestQuestionScorer(question, responseValue) {
+  this.question = question;
+  this.responseValue = responseValue;
+  this.validResponse = this.question?.validation?.valid_response;
+}
 
+TestQuestionScorer.prototype = {
   isValid() {
     const responseValue = this.responseValue ?? null;
     const validResponse = this.validResponse?.value ?? null;
@@ -14,24 +14,26 @@ class TestQuestionScorer {
     }
 
     return responseValue === validResponse;
-  }
+  },
 
   validateIndividualResponses() {
     return this.isValid();
-  }
+  },
 
   score() {
     return this.isValid() ? this.maxScore() : 0;
-  }
+  },
 
   maxScore() {
     return (this.validResponse && this.validResponse.score) || 0;
-  }
+  },
 
   canValidateResponse() {
     return !!this.validResponse?.value;
-  }
-}
+  },
+};
+
+TestQuestionScorer.prototype.constructor = TestQuestionScorer;
 
 LearnosityAmd.define([], () => ({
   Scorer: TestQuestionScorer

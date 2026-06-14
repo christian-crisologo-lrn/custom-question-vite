@@ -1,0 +1,21 @@
+{
+  "custom-input": [
+    {
+      "name": "Custom Input",
+      "description": "Custom Input",
+      "group_reference": "other",
+      "defaults": {
+        "type": "custom",
+        "max_length": 10,
+        "js": {
+          "question": "{BASE_URL}/questions/customInput/question.js",
+          "scorer": "{BASE_URL}/questions/customInput/scorer.js"
+        },
+        "valid_response": {
+          "score": 1,
+          "value": "test"
+        }
+      }
+    }
+  ]
+}

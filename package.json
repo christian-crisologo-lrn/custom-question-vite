@@ -1,37 +1,31 @@
 {
-  "name": "lrn48922-custom0-question",
+  "name": "simple-custom-question",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Learnosity custom question demo (Vite + Express)",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "start": "webpack serve",
-    "build": "webpack"
+    "start": "concurrently -k -n server,client -c blue,green \"npm:start:server\" \"npm:start:client\"",
+    "dev": "concurrently -k -n server,client -c blue,green \"npm:start:server\" \"npm:start:client\"",
+    "build": "npm run build --workspace client",
+    "preview": "npm run preview --workspace client",
+    "start:server": "npm start --workspace server",
+    "start:client": "npm run dev --workspace client"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christian-crisologo-lrn/lrn48922-custom-question.git"
+    "url": "git+https://github.com/christian-crisologo-lrn/simple-custom-question.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/christian-crisologo-lrn/lrn48922-custom-question"
+    "url": "https://github.com/christian-crisologo-lrn/simple-custom-question"
   },
-  "homepage": "https://github.com/christian-crisologo-lrn/lrn48922-custom-question#readme",
+  "homepage": "https://github.com/christian-crisologo-lrn/simple-custom-question#readme",
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/register": "^7.0.0",
-    "babel-loader": "^8.0.0",
-    "copy-webpack-plugin": "^13.0.0",
-    "css-loader": "^7.1.2",
-    "html-webpack-plugin": "^5.6.5",
-    "mini-css-extract-plugin": "^2.9.4",
-    "sass": "^1.85.1",
-    "sass-loader": "^16.0.5",
-    "style-loader": "^4.0.0",
-    "terser-webpack-plugin": "^5.3.14",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2"
+    "concurrently": "^9.2.1"
   }
 }
