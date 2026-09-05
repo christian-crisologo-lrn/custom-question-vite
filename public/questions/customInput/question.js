@@ -28,10 +28,22 @@
       },
       getValidationMark(validationState) {
         if (validationState === "correct") {
-          return "✓";
+          return `
+          <span class="${LRN_CQ_PREFIX}-status ${LRN_CQ_PREFIX}-status--correct" aria-live="polite">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12.5L9.5 17L19 7.5" />
+            </svg>
+          </span>
+        `;
         }
         if (validationState === "incorrect") {
-          return "✕";
+          return `
+          <span class="${LRN_CQ_PREFIX}-status ${LRN_CQ_PREFIX}-status--incorrect" aria-live="polite">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 7L17 17M17 7L7 17" />
+            </svg>
+          </span>
+        `;
         }
         return "";
       },
@@ -52,6 +64,11 @@
         const value = options.inputValue !== void 0 ? options.inputValue : this.getCurrentValue();
         const mark = this.getValidationMark(validationState);
         const validationClass = validationState ? ` ${LRN_CQ_PREFIX}--${validationState}` : "";
+        const resetButton = `
+        <button type="button" class="${LRN_CQ_PREFIX}-reset" data-action="reset-answer">
+          Reset
+        </button>
+      `;
         container.innerHTML = `
         <div class="${LRN_CQ_PREFIX}-field${validationClass}">
           ${isReviewState ? `
@@ -61,17 +78,29 @@
             </div>
           ` : `
             <div class="${LRN_CQ_PREFIX}-input-wrap">
-              <input type="text" value="${value}" ${options.disabled ? "disabled" : ""} />
-              ${mark ? `<span class="${LRN_CQ_PREFIX}-status" aria-live="polite">${mark}</span>` : ""}
+              <input
+                class="${LRN_CQ_PREFIX}-input"
+                type="text"
+                value="${value}"
+                ${options.disabled ? "disabled" : ""}
+              />
+              ${mark || ""}
+              ${resetButton}
             </div>
           `}
         </div>
       `;
         if (!isReviewState) {
           const input = container.querySelector("input");
+          const resetButtonElement = container.querySelector("button[data-action='reset-answer']");
           if (input) {
             input.addEventListener("change", (event) => {
               this.onValueChange(event.target.value);
+            });
+          }
+          if (resetButtonElement) {
+            resetButtonElement.addEventListener("click", () => {
+              this.resetAnswer();
             });
           }
         }
@@ -89,6 +118,15 @@
           inputValue: responseValue
         });
         this.events.trigger("changed", responseValue);
+      },
+      resetAnswer() {
+        this.init.response = "";
+        this.validationState = "";
+        this.events.trigger("resetResponse");
+        this.renderComponent({
+          validationUIState: "",
+          inputValue: ""
+        });
       },
       resetValidationUIState() {
         this.validationState = "";

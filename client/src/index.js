@@ -1,3 +1,4 @@
+import './questions/customInput/styles.scss';
 import { runAuthoring } from './authoring';
 import { runPlayer } from './player';
 import { getQueryParam } from './util';
