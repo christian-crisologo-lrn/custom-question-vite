@@ -36,9 +36,27 @@ app.post('/sign-learnosity-request', (req, res) => {
   res.send(response);
 });
 
-const port = getPort();
+const requestedPort = getPort();
 const serverUrl = getServerUrl();
 
-http.createServer(app).listen(port, () => {
-  console.log(`Server listening at ${serverUrl}`);
-});
+function startServer(port) {
+  const server = http.createServer(app);
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      const nextPort = port + 1;
+      console.warn(`Port ${port} is in use, retrying on ${nextPort}`);
+      startServer(nextPort);
+      return;
+    }
+
+    throw error;
+  });
+
+  server.listen(port, () => {
+    process.env.PORT = String(port);
+    console.log(`Server listening at http://localhost:${port}`);
+  });
+}
+
+startServer(requestedPort);

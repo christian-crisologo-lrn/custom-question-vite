@@ -39,81 +39,104 @@
     this.options = getQuestionOptions(init.question);
     this.isMultiple = ((_a = init.question) == null ? void 0 : _a.multiple_response) !== false;
     this.response = normalizeArray(init.response);
-    this.render();
-    this.registerPublicMethods();
-    this.registerEventsListener();
-    if (init.state === "review") {
-      init.getFacade().disable();
-    }
-    this.events.trigger("ready");
-  }
-  MultipleOptionQuestion.prototype = {
-    render() {
-      var _a;
-      const inputType = this.isMultiple ? "checkbox" : "radio";
-      const groupName = `${LRN_MCQ_PREFIX}-${((_a = this.init.question) == null ? void 0 : _a.reference) || "group"}`;
-      const choices = this.options.map(({ id, label }) => {
-        const checked = this.response.includes(id) ? "checked" : "";
-        return `
-          <label class="${LRN_MCQ_PREFIX}-choice">
-            <input
-              type="${inputType}"
-              name="${groupName}"
-              value="${id}"
-              ${checked}
-              ${this.init.state === "review" ? "disabled" : ""}
-            />
-            <span class="${LRN_MCQ_PREFIX}-label">${label}</span>
-          </label>
-        `;
-      }).join("");
-      this.el.innerHTML = `
-      <div class="${LRN_MCQ_PREFIX}">
-        <div class="${LRN_MCQ_PREFIX}-choices">${choices}</div>
-      </div>
-    `;
-    },
-    onSelectionChange() {
-      if (this.init.state === "review") {
-        return;
-      }
-      const selected = Array.from(this.el.querySelectorAll("input:checked")).map((input) => input.value);
-      this.response = selected;
-      this.events.trigger("changed", this.isMultiple ? selected : selected[0] || "");
-    },
-    setDisabledState(disabled) {
-      Array.from(this.el.querySelectorAll("input")).forEach((input) => {
-        input.disabled = disabled;
-      });
-    },
-    registerPublicMethods() {
-      const facade = this.init.getFacade();
-      facade.disable = () => {
-        this.setDisabledState(true);
-      };
-      facade.enable = () => {
-        this.setDisabledState(false);
-      };
-      facade.resetResponse = () => {
-        this.response = [];
-        Array.from(this.el.querySelectorAll("input")).forEach((input) => {
-          input.checked = false;
+    this.componentStates = {};
+    Object.assign(this, {
+      render() {
+        this.el.innerHTML = `
+        <div class="${LRN_MCQ_PREFIX} lrn-response-validation-wrapper">
+          <div class="${LRN_MCQ_PREFIX}-root"></div>
+        </div>
+      `;
+        return Promise.all([]).then(() => {
+          this.renderComponent();
         });
-        this.events.trigger("changed", this.isMultiple ? [] : "");
-      };
-      facade.getResponse = () => {
-        return this.isMultiple ? this.response : this.response[0] || "";
-      };
-    },
-    registerEventsListener() {
-      this.el.addEventListener("change", (event) => {
-        if (event.target && event.target.tagName === "INPUT") {
-          this.onSelectionChange();
+      },
+      renderComponent(options = {}) {
+        var _a2;
+        const container = this.el.querySelector(`.${LRN_MCQ_PREFIX}-root`);
+        const inputType = this.isMultiple ? "checkbox" : "radio";
+        const groupName = `${LRN_MCQ_PREFIX}-${((_a2 = this.init.question) == null ? void 0 : _a2.reference) || "group"}`;
+        const isDisabled = options.disabled || this.init.state === "review";
+        const validationClass = options.validationUIState ? ` ${LRN_MCQ_PREFIX}--${options.validationUIState}` : "";
+        const choices = this.options.map(({ id, label }) => {
+          const checked = this.response.includes(id) ? "checked" : "";
+          return `
+            <label class="${LRN_MCQ_PREFIX}-choice">
+              <input
+                type="${inputType}"
+                name="${groupName}"
+                value="${id}"
+                ${checked}
+                ${isDisabled ? "disabled" : ""}
+              />
+              <span class="${LRN_MCQ_PREFIX}-label">${label}</span>
+            </label>
+          `;
+        }).join("");
+        container.innerHTML = `
+        <div class="${LRN_MCQ_PREFIX}-choices${validationClass}">${choices}</div>
+      `;
+        if (!isDisabled) {
+          container.addEventListener("change", (event) => {
+            if (event.target && event.target.tagName === "INPUT") {
+              this.onValueChange();
+            }
+          });
         }
-      });
-    }
-  };
-  MultipleOptionQuestion.prototype.constructor = MultipleOptionQuestion;
+      },
+      onValueChange() {
+        if (this.componentStates.resetState) {
+          this.renderComponent({ resetState: "attemptedAfterReset" });
+        }
+        const selected = Array.from(this.el.querySelectorAll("input:checked")).map((input) => input.value);
+        this.response = selected;
+        this.events.trigger("changed", this.isMultiple ? selected : selected[0] || "");
+      },
+      resetValidationUIState() {
+        this.renderComponent({
+          validationUIState: ""
+        });
+      },
+      registerPublicMethods() {
+        const facade = this.init.getFacade();
+        facade.disable = () => {
+          this.renderComponent({ disabled: true });
+        };
+        facade.enable = () => {
+          this.renderComponent({ disabled: false });
+        };
+        facade.resetResponse = () => {
+          this.response = [];
+          this.events.trigger("resetResponse");
+          this.renderComponent({ resetState: "reset" });
+        };
+        facade.getResponse = () => {
+          return this.isMultiple ? this.response : this.response[0] || "";
+        };
+      },
+      registerEventsListener() {
+        this.onValidateListener();
+      },
+      onValidateListener() {
+        const facade = this.init.getFacade();
+        const events = this.init.events;
+        events.on("validate", () => {
+          const isValid = facade.isValid();
+          this.renderComponent({
+            validationUIState: isValid ? "correct" : "incorrect"
+          });
+        });
+      }
+    });
+    this.render().then(() => {
+      this.registerPublicMethods();
+      this.registerEventsListener();
+      if (init.state === "review") {
+        init.getFacade().disable();
+      }
+      init.events.trigger("ready");
+    });
+  }
   LearnosityAmd.define([], () => ({
     Question: MultipleOptionQuestion
   }));

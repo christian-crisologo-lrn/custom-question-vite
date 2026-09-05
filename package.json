@@ -1,5 +1,5 @@
 {
-  "name": "simple-custom-question",
+  "name": "custom-question-vite",
   "version": "1.0.0",
   "private": true,
   "description": "Learnosity custom question demo (Vite + Express)",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christian-crisologo-lrn/simple-custom-question.git"
+    "url": "git+https://github.com/christian-crisologo-lrn/custom-question-vite.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/christian-crisologo-lrn/simple-custom-question"
+    "url": "https://github.com/christian-crisologo-lrn/custom-question-vite"
   },
-  "homepage": "https://github.com/christian-crisologo-lrn/simple-custom-question#readme",
+  "homepage": "https://github.com/christian-crisologo-lrn/custom-question-vite#readme",
   "devDependencies": {
     "concurrently": "^9.2.1"
   }

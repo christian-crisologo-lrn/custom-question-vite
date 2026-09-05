@@ -5,32 +5,31 @@
     this.question = question;
     this.responseValue = responseValue;
     this.validResponse = (_b = (_a = this.question) == null ? void 0 : _a.validation) == null ? void 0 : _b.valid_response;
-  }
-  TestQuestionScorer.prototype = {
-    isValid() {
-      var _a;
-      const responseValue = this.responseValue ?? null;
-      const validResponse = ((_a = this.validResponse) == null ? void 0 : _a.value) ?? null;
-      if (responseValue === null || validResponse === null) {
-        return false;
+    Object.assign(this, {
+      isValid() {
+        var _a2;
+        const responseValue2 = this.responseValue ?? null;
+        const validResponse = ((_a2 = this.validResponse) == null ? void 0 : _a2.value) ?? null;
+        if (responseValue2 === null || validResponse === null) {
+          return false;
+        }
+        return responseValue2 === validResponse;
+      },
+      validateIndividualResponses() {
+        return this.isValid();
+      },
+      score() {
+        return this.isValid() ? this.maxScore() : 0;
+      },
+      maxScore() {
+        return this.validResponse && this.validResponse.score || 0;
+      },
+      canValidateResponse() {
+        var _a2;
+        return !!((_a2 = this.validResponse) == null ? void 0 : _a2.value);
       }
-      return responseValue === validResponse;
-    },
-    validateIndividualResponses() {
-      return this.isValid();
-    },
-    score() {
-      return this.isValid() ? this.maxScore() : 0;
-    },
-    maxScore() {
-      return this.validResponse && this.validResponse.score || 0;
-    },
-    canValidateResponse() {
-      var _a;
-      return !!((_a = this.validResponse) == null ? void 0 : _a.value);
-    }
-  };
-  TestQuestionScorer.prototype.constructor = TestQuestionScorer;
+    });
+  }
   LearnosityAmd.define([], () => ({
     Scorer: TestQuestionScorer
   }));

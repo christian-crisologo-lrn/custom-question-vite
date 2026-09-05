@@ -7,84 +7,158 @@
     this.lrnUtils = lrnUtils;
     this.el = init.$el.get(0);
     this.componentStates = {};
+    this.validationState = "";
+    const customInputObject = {
+      getCorrectAnswer() {
+        var _a;
+        const questionValidation = (_a = this.init.question) == null ? void 0 : _a.validation;
+        const validResponse = questionValidation == null ? void 0 : questionValidation.valid_response;
+        return (validResponse == null ? void 0 : validResponse.value) ?? "";
+      },
+      getCurrentValue() {
+        const value = this.init.response;
+        return value === null || value === void 0 ? "" : String(value);
+      },
+      getValidationState(value) {
+        const correctAnswer = this.getCorrectAnswer();
+        if (!correctAnswer) {
+          return "";
+        }
+        return value === correctAnswer ? "correct" : "incorrect";
+      },
+      getValidationMark(validationState) {
+        if (validationState === "correct") {
+          return "✓";
+        }
+        if (validationState === "incorrect") {
+          return "✕";
+        }
+        return "";
+      },
+      render() {
+        this.el.innerHTML = `
+        <div class="${LRN_CQ_PREFIX} lrn-response-validation-wrapper">
+          <div class="${LRN_CQ_PREFIX}-root"></div>
+        </div>
+      `;
+        return Promise.all([]).then(() => {
+          this.renderComponent();
+        });
+      },
+      renderComponent(options = {}) {
+        const container = this.el.querySelector(`.${LRN_CQ_PREFIX}-root`);
+        const isReviewState = this.init.state === "review";
+        const validationState = options.validationUIState ?? this.validationState ?? "";
+        const value = options.inputValue !== void 0 ? options.inputValue : this.getCurrentValue();
+        const mark = this.getValidationMark(validationState);
+        const validationClass = validationState ? ` ${LRN_CQ_PREFIX}--${validationState}` : "";
+        container.innerHTML = `
+        <div class="${LRN_CQ_PREFIX}-field${validationClass}">
+          ${isReviewState ? `
+            <div>
+              <div>given answer: ${this.init.response}</div>
+              <div>correct answer: ${this.getCorrectAnswer()}</div>
+            </div>
+          ` : `
+            <div class="${LRN_CQ_PREFIX}-input-wrap">
+              <input type="text" value="${value}" ${options.disabled ? "disabled" : ""} />
+              ${mark ? `<span class="${LRN_CQ_PREFIX}-status" aria-live="polite">${mark}</span>` : ""}
+            </div>
+          `}
+        </div>
+      `;
+        if (!isReviewState) {
+          const input = container.querySelector("input");
+          if (input) {
+            input.addEventListener("change", (event) => {
+              this.onValueChange(event.target.value);
+            });
+          }
+        }
+      },
+      onValueChange(value) {
+        const responseValue = value ?? "";
+        this.init.response = responseValue;
+        if (this.componentStates.resetState) {
+          this.renderComponent({ resetState: "attemptedAfterReset" });
+        }
+        const validationState = this.getValidationState(responseValue);
+        this.validationState = validationState;
+        this.renderComponent({
+          validationUIState: validationState,
+          inputValue: responseValue
+        });
+        this.events.trigger("changed", responseValue);
+      },
+      resetValidationUIState() {
+        this.validationState = "";
+        this.renderComponent({
+          validationUIState: "",
+          inputValue: this.getCurrentValue()
+        });
+      },
+      registerPublicMethods() {
+        const facade = this.init.getFacade();
+        facade.disable = () => {
+          this.renderComponent({ disabled: true, inputValue: this.getCurrentValue() });
+        };
+        facade.enable = () => {
+          this.renderComponent({ disabled: false, inputValue: this.getCurrentValue() });
+        };
+        facade.resetResponse = () => {
+          this.init.response = "";
+          this.validationState = "";
+          this.events.trigger("resetResponse");
+          this.renderComponent({ resetState: "reset", inputValue: "" });
+        };
+        facade.getResponse = () => this.getCurrentValue();
+      },
+      registerEventsListener() {
+        this.onValidateListener();
+        this.onShowCorrectAnswerListener();
+      },
+      onValidateListener() {
+        const facade = this.init.getFacade();
+        const events = this.init.events;
+        events.on("validate", () => {
+          const currentValue = this.getCurrentValue();
+          const isValid = facade.isValid();
+          this.validationState = isValid ? "correct" : "incorrect";
+          this.renderComponent({
+            validationUIState: this.validationState,
+            inputValue: currentValue
+          });
+        });
+      },
+      onShowCorrectAnswerListener() {
+        const events = this.init.events;
+        const correctAnswer = this.getCorrectAnswer();
+        events.on("show-correct-answer", () => {
+          this.validationState = correctAnswer ? "correct" : "incorrect";
+          this.renderComponent({
+            validationUIState: this.validationState,
+            inputValue: correctAnswer
+          });
+        });
+        events.on("hide-correct-answer", () => {
+          this.validationState = this.getValidationState(this.getCurrentValue());
+          this.renderComponent({
+            validationUIState: this.validationState,
+            inputValue: this.getCurrentValue()
+          });
+        });
+      }
+    };
+    Object.assign(this, customInputObject);
     this.render().then(() => {
       this.registerPublicMethods();
       this.registerEventsListener();
       if (init.state === "review") {
         init.getFacade().disable();
       }
-      init.events.trigger("ready");
+      this.events.trigger("ready");
     });
   }
-  CustomInput.prototype = {
-    render() {
-      this.el.innerHTML = `
-      <div class="${LRN_CQ_PREFIX} lrn-response-validation-wrapper">
-        <div class="${LRN_CQ_PREFIX}-root"></div>
-      </div>
-    `;
-      return Promise.all([]).then(() => {
-        this.renderComponent();
-      });
-    },
-    renderComponent(options = {}) {
-      var _a, _b, _c;
-      const container = this.el.querySelector(`.${LRN_CQ_PREFIX}-root`);
-      container.innerHTML = `
-      <div>
-        ${this.init.state === "review" ? `
-          <div>
-            <div>given answer: ${this.init.response}</div>
-            <div>correct answer: ${(_c = (_b = (_a = this.init.question) == null ? void 0 : _a.validation) == null ? void 0 : _b.valid_response) == null ? void 0 : _c.value}</div>
-          </div>
-        ` : `<input type="text">`}
-      </div>
-    `;
-      if (this.init.state !== "review") {
-        container.querySelector("input").addEventListener("change", (event) => {
-          this.onValueChange(event.target.value);
-        });
-      }
-    },
-    onValueChange(value) {
-      if (this.componentStates.resetState) {
-        this.renderComponent({ resetState: "attemptedAfterReset" });
-      }
-      this.events.trigger("changed", value);
-    },
-    resetValidationUIState() {
-      this.renderComponent({
-        validationUIState: ""
-      });
-    },
-    registerPublicMethods() {
-      const facade = this.init.getFacade();
-      facade.disable = () => {
-        this.renderComponent({ disabled: true });
-      };
-      facade.enable = () => {
-        this.renderComponent({ disabled: false });
-      };
-      facade.resetResponse = () => {
-        this.events.trigger("resetResponse");
-        this.renderComponent({ resetState: "reset" });
-      };
-    },
-    registerEventsListener() {
-      this.onValidateListener();
-    },
-    onValidateListener() {
-      const facade = this.init.getFacade();
-      const events = this.init.events;
-      events.on("validate", () => {
-        const isValid = facade.isValid();
-        this.renderComponent({
-          validationUIState: isValid ? "correct" : "incorrect"
-        });
-      });
-    }
-  };
-  CustomInput.prototype.constructor = CustomInput;
   LearnosityAmd.define([], () => ({
     Question: CustomInput
   }));

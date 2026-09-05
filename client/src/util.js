@@ -1,5 +1,5 @@
 // Constants
-export const REPO_NAME = "simple-custom-question";
+export const REPO_NAME = "custom-question-vite";
 export const BASE_URL = `https://christian-crisologo-lrn.github.io/${REPO_NAME}`;
 export const USER_ID = "labs-site";
 
@@ -46,8 +46,30 @@ export function getScriptUrl(api) {
   return config[api] || config.items;
 }
 
+// Determine whether the app is being served locally (e.g. Vite dev server)
+function isLocalHost() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const { hostname } = window.location;
+
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname === "0.0.0.0"
+  );
+}
+
 // Get the base URL for custom question resources
 export function getBaseUrl() {
+  // When running locally, serve question assets from the local origin
+  // instead of the hardcoded GitHub Pages URL.
+  if (isLocalHost()) {
+    return window.location.origin;
+  }
+
   const config = getEnvConfig();
 
   return config.baseUrl;
