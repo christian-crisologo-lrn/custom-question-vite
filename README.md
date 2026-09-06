@@ -145,12 +145,12 @@ Use this as the format to paste when creating or updating a custom question type
   "custom_type": "custom-input-v2",
   "type": "custom",
   "name": "custom-input-v2",
-  "editor_layout": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/authoring_custom_layout.html",
+  "editor_layout": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/authoring_custom_layout.html",
   "js": {
-    "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/question.js",
-    "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/scorer.js"
+    "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/question.js",
+    "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/scorer.js"
   },
-  "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/style.css",
+  "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/style.css",
   "version": "v1.0.0",
   "editor_schema": {
     "hidden_question": false,
@@ -189,10 +189,10 @@ Template example:
         "type": "custom",
         "max_length": 10,
         "js": {
-          "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/question.js",
-          "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/scorer.js"
+          "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/question.js",
+          "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/scorer.js"
         },
-        "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/style.css",
+        "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/public/questions/<custom-question-component>/style.css",
         "valid_response": {
           "score": 1,
           "value": "test"
