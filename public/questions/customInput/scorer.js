@@ -2,10 +2,11 @@
   "use strict";
   class Scorer {
     constructor(question, responseValue) {
-      var _a, _b;
+      var _a;
       this.question = question;
       this.responseValue = responseValue;
-      this.validResponse = (_b = (_a = this.question) == null ? void 0 : _a.validation) == null ? void 0 : _b.valid_response;
+      this.validResponse = ((_a = question == null ? void 0 : question.validation) == null ? void 0 : _a.valid_response) ?? (question == null ? void 0 : question.valid_response);
+      console.log("this.validResponse", this.validResponse);
     }
     isValid() {
       var _a;
@@ -15,9 +16,6 @@
         return false;
       }
       return responseValue === validResponse;
-    }
-    validateIndividualResponses() {
-      return this.isValid();
     }
     score() {
       return this.isValid() ? this.maxScore() : 0;
