@@ -11,6 +11,7 @@
           "question": "{BASE_URL}/questions/customInput/question.js",
           "scorer": "{BASE_URL}/questions/customInput/scorer.js"
         },
+        "css": "{BASE_URL}/questions/customInput/style.css",
         "valid_response": {
           "score": 1,
           "value": "test"

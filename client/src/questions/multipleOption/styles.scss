@@ -1,0 +1,42 @@
+$lrn-mcq-selected: #2b7fff;
+$lrn-mcq-selected-soft: rgba(43, 127, 255, 0.12);
+$lrn-mcq-border: #dfe6ee;
+$lrn-mcq-text: #1f2937;
+$lrn-mcq-bg: #ffffff;
+
+.lrn-multiple-option {
+  display: block;
+  color: $lrn-mcq-text;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.lrn-multiple-option-choices {
+  display: grid;
+  gap: 12px;
+}
+
+.lrn-multiple-option-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid $lrn-mcq-border;
+  border-radius: 12px;
+  background: $lrn-mcq-bg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(43, 127, 255, 0.5);
+    background: #f7faff;
+  }
+
+  input {
+    accent-color: $lrn-mcq-selected;
+  }
+}
+
+.lrn-multiple-option-label {
+  font-size: 0.98rem;
+  line-height: 1.4;
+}

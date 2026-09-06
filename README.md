@@ -136,6 +136,72 @@ Preview the production build locally with:
 npm run preview
 ```
 
+## Custom question metadata reference
+
+Use this as the format to paste when creating or updating a custom question type. Include both the `js` bundle paths and the component-specific `css` file.
+
+```json
+{
+  "custom_type": "custom-input-v2",
+  "type": "custom",
+  "name": "custom-input-v2",
+  "editor_layout": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/authoring_custom_layout.html",
+  "js": {
+    "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/question.js",
+    "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/scorer.js"
+  },
+  "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/style.css",
+  "version": "v1.0.0",
+  "editor_schema": {
+    "hidden_question": false,
+    "attributes": {
+      "max_length": {
+        "type": "number",
+        "default": 20
+      },
+      "valid_response": {
+        "type": "object",
+        "attributes": {
+          "score": {
+            "type": "number",
+            "default": 1
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Template example:
+
+```json
+
+ 
+    {
+      "name": "Custom Input V2",
+      "description": "Custom Input V2",
+      "group_reference": "other",
+      "defaults": {
+        "type": "custom",
+        "max_length": 10,
+        "js": {
+          "question": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/question.js",
+          "scorer": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/scorer.js"
+        },
+        "css": "https://christian-crisologo-lrn.github.io/custom-question-vite/questions/<custom-question-component>/style.css",
+        "valid_response": {
+          "score": 1,
+          "value": "test"
+        }
+      }
+    }
+
+```
+
 ## Project Structure
 
 ```
@@ -154,7 +220,7 @@ npm run preview
 │       ├── util.js                    # Utility functions
 │       └── questions/
 │           ├── customInput/           # Legacy custom question implementation
-│           ├── customInputV2/         # V2 custom question implementation using direct valid_response mapping
+│           ├── <custom-question-component>/         # V2 custom question implementation using direct valid_response mapping
 │           └── multipleOption/        # Example custom question type
 ├── server/
 │   └── src/

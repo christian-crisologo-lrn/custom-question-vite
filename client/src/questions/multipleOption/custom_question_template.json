@@ -11,6 +11,7 @@
           "question": "{BASE_URL}/questions/multipleOption/question.js",
           "scorer": "{BASE_URL}/questions/multipleOption/scorer.js"
         },
+        "css": "{BASE_URL}/questions/multipleOption/style.css",
         "options": [
           { "id": "A", "label": "Option A" },
           { "id": "B", "label": "Option B" },

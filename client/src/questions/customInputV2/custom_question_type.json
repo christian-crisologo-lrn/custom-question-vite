@@ -7,6 +7,7 @@
     "question": "{BASE_URL}/questions/customInputV2/question.js",
     "scorer": "{BASE_URL}/questions/customInputV2/scorer.js"
   },
+  "css": "{BASE_URL}/questions/customInputV2/style.css",
   "version": "v1.0.0",
   "editor_schema": {
     "hidden_question": false,

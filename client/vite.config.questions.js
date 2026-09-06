@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import * as sass from 'sass';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_ROOT = resolve(ROOT, '..', 'public');
@@ -47,19 +48,28 @@ export default defineConfig({
     {
       name: 'copy-question-assets',
       closeBundle() {
-        const sourceLayoutPath = resolve(ROOT, 'src', questionTypeDir, 'authoring_custom_layout.html');
+        const componentSourceDir = resolve(ROOT, 'src', questionTypeDir);
+        const distQuestionDir = resolve(ROOT, 'dist', questionTypeDir);
+        const publicQuestionDir = resolve(PUBLIC_ROOT, questionTypeDir);
+
+        mkdirSync(distQuestionDir, { recursive: true });
+        mkdirSync(publicQuestionDir, { recursive: true });
+
+        const sourceLayoutPath = resolve(componentSourceDir, 'authoring_custom_layout.html');
         if (existsSync(sourceLayoutPath)) {
-          const distLayoutDir = resolve(ROOT, 'dist', questionTypeDir);
-          const publicLayoutDir = resolve(PUBLIC_ROOT, questionTypeDir);
-          mkdirSync(distLayoutDir, { recursive: true });
-          mkdirSync(publicLayoutDir, { recursive: true });
-          copyFileSync(sourceLayoutPath, resolve(distLayoutDir, 'authoring_custom_layout.html'));
-          copyFileSync(sourceLayoutPath, resolve(publicLayoutDir, 'authoring_custom_layout.html'));
+          copyFileSync(sourceLayoutPath, resolve(distQuestionDir, 'authoring_custom_layout.html'));
+          copyFileSync(sourceLayoutPath, resolve(publicQuestionDir, 'authoring_custom_layout.html'));
+        }
+
+        const sourceScssPath = resolve(componentSourceDir, 'styles.scss');
+        if (existsSync(sourceScssPath)) {
+          const compiledCss = sass.compile(sourceScssPath, { style: 'expanded' }).css;
+          const cssOutput = 'style.css';
+          writeFileSync(resolve(distQuestionDir, cssOutput), compiledCss);
+          writeFileSync(resolve(publicQuestionDir, cssOutput), compiledCss);
         }
 
         const publicAssetPath = resolve(PUBLIC_ROOT, outputFileName);
-        const publicQuestionDir = resolve(PUBLIC_ROOT, questionTypeDir);
-        mkdirSync(publicQuestionDir, { recursive: true });
         copyFileSync(
           resolve(ROOT, 'dist', outputFileName),
           publicAssetPath
