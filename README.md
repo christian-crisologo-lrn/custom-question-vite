@@ -89,7 +89,8 @@ http://localhost:8081/report.html?env=dev&sessionId=abc123&userId=user456
 | `npm run dev` | Alias of `npm start` |
 | `npm run start:server` | Starts only the Express signing server (nodemon, default port 3004) |
 | `npm run start:client` | Starts only the Vite dev server on port 8081 |
-| `npm run build` | Production build of the client (app + custom question bundles) into `client/dist/` |
+| `npm run build` | Production build of the client (app + all custom question bundles) into `client/dist/` |
+| `npm run build:questions` | Dynamically discovers every `question.js` and `scorer.js` under `src/questions` and builds them into standalone bundles |
 | `npm run preview` | Serves the production build locally for inspection |
 
 ## Server configuration
@@ -120,12 +121,14 @@ The client expects the signing server at `http://localhost:3004` (see `client/sr
 npm run build
 ```
 
-This runs two Vite builds in sequence:
+This runs two stages in sequence:
 
-1. The multi-page app — emits `client/dist/index.html`, `client/dist/report.html`, and their JS assets under `client/dist/assets/`.
-2. The custom question bundles — emits `client/dist/questions/customInput/question.js`, `scorer.js` (IIFE bundles that register themselves via `LearnosityAmd.define`), plus the authoring HTML layout.
+1. The multi-page app — emits `client/dist/index.html`, `client/dist/report.html`, and their JS/CSS assets under `client/dist/assets/`.
+2. The custom question bundles — uses `client/build-question-bundles.mjs` to automatically discover every `question.js` and `scorer.js` under `client/src/questions/*` and build each as a standalone IIFE bundle.
 
-The `questions/customInput/*` files are intended to be hosted on a CDN / static host (e.g. GitHub Pages) at the URL referenced by `BASE_URL` in `client/src/util.js`; Learnosity loads them at runtime when rendering the custom question type.
+This approach keeps the build maintainable without hardcoding each component in the `package.json` script. Any new component added in the `src/questions` tree is picked up automatically as long as it contains the standard `question.js` and `scorer.js` files.
+
+The generated bundles are intended to be hosted on a CDN / static host (for example, GitHub Pages) at the URL referenced by `BASE_URL` in `client/src/util.js`. Learnosity loads them at runtime when rendering the custom question type.
 
 Preview the production build locally with:
 
@@ -137,23 +140,27 @@ npm run preview
 
 ```
 ├── client/
-│   ├── index.html              # Player HTML entry
-│   ├── report.html             # Reports HTML entry
-│   ├── vite.config.js          # App build config
-│   ├── vite.config.questions.js# Custom question bundle config
+│   ├── index.html                     # Player HTML entry
+│   ├── report.html                    # Reports HTML entry
+│   ├── build-question-bundles.mjs     # Discovers and builds all question/scorer bundles dynamically
+│   ├── vite.config.js                 # App build config
+│   ├── vite.config.questions.js       # Shared custom question bundle config
 │   └── src/
-│       ├── index.js            # Player entry point
-│       ├── report.js           # Reports entry point
-│       ├── player.js           # Player functionality
-│       ├── reporting.js        # Reporting functionality
-│       ├── authoring.js        # Authoring functionality
-│       ├── util.js             # Utility functions
-│       └── questions/          # Custom question types
+│       ├── index.js                   # Player entry point
+│       ├── report.js                  # Reports entry point
+│       ├── player.js                  # Player functionality
+│       ├── reporting.js               # Reporting functionality
+│       ├── authoring.js               # Authoring functionality
+│       ├── util.js                    # Utility functions
+│       └── questions/
+│           ├── customInput/           # Legacy custom question implementation
+│           ├── customInputV2/         # V2 custom question implementation using direct valid_response mapping
+│           └── multipleOption/        # Example custom question type
 ├── server/
 │   └── src/
-│       ├── index.js            # Express server
-│       └── config.js           # Server configuration
-└── client/dist/                # Build output
+│       ├── index.js                   # Express server
+│       └── config.js                  # Server configuration
+└── client/dist/                       # Build output
 ```
 
 ## License

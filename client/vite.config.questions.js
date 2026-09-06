@@ -14,6 +14,8 @@ const PUBLIC_ROOT = resolve(ROOT, '..', 'public');
 const ENTRIES = {
   'questions/customInput/question': 'src/questions/customInput/question.js',
   'questions/customInput/scorer': 'src/questions/customInput/scorer.js',
+  'questions/customInputV2/question': 'src/questions/customInputV2/question.js',
+  'questions/customInputV2/scorer': 'src/questions/customInputV2/scorer.js',
   'questions/multipleOption/question': 'src/questions/multipleOption/question.js',
   'questions/multipleOption/scorer': 'src/questions/multipleOption/scorer.js',
 };

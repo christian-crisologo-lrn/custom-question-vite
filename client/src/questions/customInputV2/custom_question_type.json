@@ -1,0 +1,56 @@
+{
+  "custom_type": "custom-input-v2",
+  "type": "custom",
+  "name": "custom-input-v2",
+  "editor_layout": "{BASE_URL}/questions/customInputV2/authoring_custom_layout.html",
+  "js": {
+    "question": "{BASE_URL}/questions/customInputV2/question.js",
+    "scorer": "{BASE_URL}/questions/customInputV2/scorer.js"
+  },
+  "version": "v1.0.0",
+  "editor_schema": {
+    "hidden_question": false,
+    "attributes": {
+      "instant_feedback": {
+        "name": "Check answer button",
+        "description": "Enables the Check Answer button underneath the question, which will provide the student with instant feedback on their response(s).",
+        "type": "boolean",
+        "required": false,
+        "default": false
+      },
+      "max_length": {
+        "default": 20,
+        "description": "Maximum number of characters that can be entered in the field. Maximum value is 250. For longer questions use longtext type.",
+        "name": "Max text input length",
+        "required": false,
+        "type": "number",
+        "group": "basic",
+        "editorV3": {
+          "element": "question",
+          "white_list": [
+            "max_length"
+          ],
+          "description": "Maximum number of characters that can be entered in the text entry area. Maximum 250 characters."
+        }
+      },
+      "valid_response": {
+        "type": "object",
+        "name": "Set Correct Answer(s)",
+        "attributes": {
+          "score": {
+            "name": "Score for correct answer",
+            "description": "Score awarded for the correct answer",
+            "type": "number",
+            "required": true,
+            "default": 1
+          },
+          "value": {
+            "name": "Correct answer",
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
