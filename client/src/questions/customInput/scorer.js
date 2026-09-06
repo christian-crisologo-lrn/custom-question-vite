@@ -2,7 +2,11 @@ class Scorer {
   constructor(question, responseValue) {
     this.question = question;
     this.responseValue = responseValue;
-    this.validResponse = this.question?.validation?.valid_response;
+    // Support both nested (validation.valid_response) and top-level (valid_response) shapes.
+    this.validResponse =
+        question?.validation?.valid_response ??
+        question?.valid_response;
+    console.log('this.validResponse', this.validResponse);
   }
 
   isValid() {
