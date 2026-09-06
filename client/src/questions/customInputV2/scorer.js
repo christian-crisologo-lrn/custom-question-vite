@@ -1,4 +1,4 @@
-function TestQuestionScorerV2(question, responseValue) {
+function Scorer(question, responseValue) {
   this.question = question;
   this.responseValue = responseValue;
   this.validResponse = this.question?.valid_response;
@@ -34,5 +34,6 @@ function TestQuestionScorerV2(question, responseValue) {
 }
 
 LearnosityAmd.define([], () => ({
-  Scorer: TestQuestionScorerV2,
+  Scorer,
 }));
+

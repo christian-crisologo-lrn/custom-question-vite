@@ -1,6 +1,6 @@
-const LRN_CQ_PREFIX = "lrn-custom-input";
+const LRN_CQ_PREFIX = "lrn-custom-input-v2";
 
-function CustomInputV2(init, lrnUtils) {
+function Question(init, lrnUtils) {
   this.init = init;
   this.events = init.events;
   this.lrnUtils = lrnUtils;
@@ -236,5 +236,5 @@ function CustomInputV2(init, lrnUtils) {
 }
 
 LearnosityAmd.define([], () => ({
-  Question: CustomInputV2,
+  Question,
 }));

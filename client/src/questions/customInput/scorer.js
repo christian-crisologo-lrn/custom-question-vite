@@ -1,4 +1,4 @@
-function TestQuestionScorer(question, responseValue) {
+function Scorer(question, responseValue) {
   this.question = question;
   this.responseValue = responseValue;
   this.validResponse = this.question?.validation?.valid_response;
@@ -12,6 +12,8 @@ function TestQuestionScorer(question, responseValue) {
         return false;
       }
 
+      console.log('responseValue:', responseValue, 'validResponse:', validResponse);
+
       return responseValue === validResponse;
     },
 
@@ -20,7 +22,10 @@ function TestQuestionScorer(question, responseValue) {
     },
 
     score() {
-      return this.isValid() ? this.maxScore() : 0;
+      console.log('Scoring response. Is valid:', this.isValid());
+      const score = this.isValid() ? this.maxScore() : 0;
+      console.log('Calculated score:', score);
+      return score;
     },
 
     maxScore() {
@@ -34,5 +39,5 @@ function TestQuestionScorer(question, responseValue) {
 }
 
 LearnosityAmd.define([], () => ({
-  Scorer: TestQuestionScorer,
+  Scorer,
 }));

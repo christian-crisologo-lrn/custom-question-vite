@@ -76,9 +76,10 @@ export async function runAuthoring() {
 
   const data = await signLearnosityRequest(getLearnosityRequest());
 
-  window.LearnosityAuthor.init(data, {
+  window.authorApp =window.LearnosityAuthor.init(data, {
     readyListener() {
-      console.log("Learnosity Author API ready");
+        console.log("Learnosity Author API ready");
+        window.authorApp.navigate('items/new/widgets/new');
     },
     errorListener(err) {
       console.error("Learnosity Author API error:", err);
