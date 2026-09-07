@@ -5,16 +5,14 @@
       var _a;
       this.question = question;
       this.responseValue = responseValue;
-      this.validResponse = ((_a = question == null ? void 0 : question.validation) == null ? void 0 : _a.valid_response) ?? (question == null ? void 0 : question.valid_response);
-      console.log("this.validResponse", this.validResponse);
+      this.validResponse = (_a = question == null ? void 0 : question.validation) == null ? void 0 : _a.valid_response;
+      console.log("this.validResponse", this.validResponse, "question:", this.question, "responseValue:", this.responseValue);
     }
     isValid() {
       var _a;
       const responseValue = this.responseValue ?? null;
       const validResponse = ((_a = this.validResponse) == null ? void 0 : _a.value) ?? null;
-
       console.log("responseValue:", responseValue, "validResponse:", validResponse);
-
       if (responseValue === null || validResponse === null) {
         return false;
       }
