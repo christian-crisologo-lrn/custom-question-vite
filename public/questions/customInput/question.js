@@ -57,12 +57,22 @@
       return "";
     }
     render() {
-      this.el.innerHTML = `
+      const { el, lrnUtils } = this;
+      el.innerHTML = `
       <div class="${LRN_CQ_PREFIX} lrn-response-validation-wrapper">
         <div class="${LRN_CQ_PREFIX}-root"></div>
+        <div class="${LRN_CQ_PREFIX}-checkAnswer-wrapper"></div>
       </div>
     `;
-      return Promise.all([]).then(() => {
+      const checkAnswerWrapper = el.querySelector(`.${LRN_CQ_PREFIX}-checkAnswer-wrapper`);
+      if (checkAnswerWrapper && lrnUtils && typeof lrnUtils.renderComponent === "function") {
+        return Promise.all([
+          lrnUtils.renderComponent("CheckAnswerButton", checkAnswerWrapper)
+        ]).then(() => {
+          this.renderComponent();
+        });
+      }
+      return Promise.resolve().then(() => {
         this.renderComponent();
       });
     }
@@ -100,13 +110,8 @@
       </div>
     `;
       if (!isReviewState) {
-        const input = container.querySelector("input");
+        container.querySelector("input");
         const resetButtonElement = container.querySelector("button[data-action='reset-answer']");
-        if (input) {
-          input.addEventListener("change", (event) => {
-            this.onValueChange(event.target.value);
-          });
-        }
         if (resetButtonElement) {
           resetButtonElement.addEventListener("click", () => {
             this.resetAnswer();
@@ -169,10 +174,14 @@
     onValidateListener() {
       const facade = this.init.getFacade();
       const events = this.init.events;
-      events.on("validate", () => {
+      events.on("validate", (options) => {
+        const { showCorrectAnswers } = options || {};
         const currentValue = this.getCurrentValue();
         const isValid = facade.isValid();
         this.validationState = isValid ? "correct" : "incorrect";
+        if (showCorrectAnswers) {
+          showCorrectAnswers();
+        }
         this.renderComponent({
           validationUIState: this.validationState,
           inputValue: currentValue
