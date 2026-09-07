@@ -9,6 +9,7 @@
       this.el = init.$el.get(0);
       this.componentStates = {};
       this.validationState = "";
+      this.suggestedAnswersList = null;
       this.render().then(() => {
         this.registerPublicMethods();
         this.registerEventsListener();
@@ -56,12 +57,23 @@
       return "";
     }
     render() {
-      this.el.innerHTML = `
+      var _a;
+      const { el, lrnUtils } = this;
+      el.innerHTML = `
       <div class="${LRN_CQ_PREFIX} lrn-response-validation-wrapper">
         <div class="${LRN_CQ_PREFIX}-root"></div>
+        <div class="${LRN_CQ_PREFIX}-checkAnswer-wrapper"></div>
+        <div class="${LRN_CQ_PREFIX}-suggestedAnswers-wrapper"></div>
       </div>
     `;
-      return Promise.all([]).then(() => {
+      const checkAnswerWrapper = el.querySelector(`.${LRN_CQ_PREFIX}-checkAnswer-wrapper`);
+      const suggestedAnswersWrapper = el.querySelector(`.${LRN_CQ_PREFIX}-suggestedAnswers-wrapper`);
+      Boolean((_a = this.init.question) == null ? void 0 : _a.instant_feedback) && this.init.state !== "review";
+      return Promise.all([
+        lrnUtils.renderComponent("CheckAnswerButton", checkAnswerWrapper),
+        lrnUtils.renderComponent("SuggestedAnswersList", suggestedAnswersWrapper)
+      ]).then(([_, suggestedAnswersList]) => {
+        this.suggestedAnswersList = suggestedAnswersList || null;
         this.renderComponent();
       });
     }
@@ -79,12 +91,6 @@
     `;
       container.innerHTML = `
       <div class="${LRN_CQ_PREFIX}-field${validationClass}">
-        ${isReviewState ? `
-          <div>
-            <div>given answer: ${this.init.response}</div>
-            <div>correct answer: ${this.getCorrectAnswer()}</div>
-          </div>
-        ` : `
           <div class="${LRN_CQ_PREFIX}-input-wrap">
             <input
               class="${LRN_CQ_PREFIX}-input"
@@ -93,9 +99,8 @@
               ${options.disabled ? "disabled" : ""}
             />
             ${mark || ""}
-            ${resetButton}
+            ${isReviewState ? "" : resetButton}
           </div>
-        `}
       </div>
     `;
       if (!isReviewState) {
@@ -114,17 +119,12 @@
       }
     }
     onValueChange(value) {
-      var _a;
       const responseValue = value ?? "";
       this.init.response = responseValue;
       if (this.componentStates.resetState) {
         this.renderComponent({ resetState: "attemptedAfterReset" });
       }
-      const shouldShowInstantFeedback = Boolean((_a = this.init.question) == null ? void 0 : _a.instant_feedback);
-      const validationState = shouldShowInstantFeedback ? this.getValidationState(responseValue) : "";
-      this.validationState = validationState;
       this.renderComponent({
-        validationUIState: validationState,
         inputValue: responseValue
       });
       this.events.trigger("changed", responseValue);
@@ -163,12 +163,11 @@
     }
     registerEventsListener() {
       this.onValidateListener();
-      this.onShowCorrectAnswerListener();
     }
     onValidateListener() {
       const facade = this.init.getFacade();
       const events = this.init.events;
-      events.on("validate", () => {
+      events.on("validate", (options = {}) => {
         const currentValue = this.getCurrentValue();
         const isValid = facade.isValid();
         this.validationState = isValid ? "correct" : "incorrect";
@@ -176,24 +175,15 @@
           validationUIState: this.validationState,
           inputValue: currentValue
         });
-      });
-    }
-    onShowCorrectAnswerListener() {
-      const events = this.init.events;
-      const correctAnswer = this.getCorrectAnswer();
-      events.on("show-correct-answer", () => {
-        this.validationState = correctAnswer ? "correct" : "incorrect";
-        this.renderComponent({
-          validationUIState: this.validationState,
-          inputValue: correctAnswer
-        });
-      });
-      events.on("hide-correct-answer", () => {
-        this.validationState = this.getValidationState(this.getCurrentValue());
-        this.renderComponent({
-          validationUIState: this.validationState,
-          inputValue: this.getCurrentValue()
-        });
+        if (this.suggestedAnswersList) {
+          this.suggestedAnswersList.reset();
+          if (!isValid && options.showCorrectAnswers) {
+            const correctAnswer = this.getCorrectAnswer();
+            if (correctAnswer) {
+              this.suggestedAnswersList.setAnswers(correctAnswer);
+            }
+          }
+        }
       });
     }
   }
