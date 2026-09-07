@@ -115,12 +115,14 @@
       }
     }
     onValueChange(value) {
+      var _a;
       const responseValue = value ?? "";
       this.init.response = responseValue;
       if (this.componentStates.resetState) {
         this.renderComponent({ resetState: "attemptedAfterReset" });
       }
-      const validationState = this.getValidationState(responseValue);
+      const shouldShowInstantFeedback = Boolean((_a = this.init.question) == null ? void 0 : _a.instant_feedback);
+      const validationState = shouldShowInstantFeedback ? this.getValidationState(responseValue) : "";
       this.validationState = validationState;
       this.renderComponent({
         validationUIState: validationState,

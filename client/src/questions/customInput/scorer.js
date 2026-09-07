@@ -20,6 +20,10 @@ class Scorer {
     return responseValue === validResponse;
   }
 
+  validateIndividualResponses() {
+    return this.isValid();
+  }
+
   score() {
     console.log('isValid:', this.isValid(), 'responseValue:', this.responseValue, 'validResponse:', this.validResponse);
     return this.isValid() ? this.maxScore() : 0;

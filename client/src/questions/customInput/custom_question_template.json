@@ -7,6 +7,7 @@
       "defaults": {
         "type": "custom",
         "max_length": 10,
+        "instant_feedback": true,
         "js": {
           "question": "{BASE_URL}/questions/customInput/question.js",
           "scorer": "{BASE_URL}/questions/customInput/scorer.js"

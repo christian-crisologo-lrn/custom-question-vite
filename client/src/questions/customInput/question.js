@@ -143,7 +143,11 @@ class Question {
       this.renderComponent({ resetState: "attemptedAfterReset" });
     }
 
-    const validationState = this.getValidationState(responseValue);
+    const shouldShowInstantFeedback = Boolean(this.init.question?.instant_feedback);
+    const validationState = shouldShowInstantFeedback
+      ? this.getValidationState(responseValue)
+      : "";
+
     this.validationState = validationState;
     this.renderComponent({
       validationUIState: validationState,
