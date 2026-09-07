@@ -12,12 +12,16 @@
       var _a;
       const responseValue = this.responseValue ?? null;
       const validResponse = ((_a = this.validResponse) == null ? void 0 : _a.value) ?? null;
+
+      console.log("responseValue:", responseValue, "validResponse:", validResponse);
+
       if (responseValue === null || validResponse === null) {
         return false;
       }
       return responseValue === validResponse;
     }
     score() {
+      console.log("isValid:", this.isValid(), "responseValue:", this.responseValue, "validResponse:", this.validResponse);
       return this.isValid() ? this.maxScore() : 0;
     }
     maxScore() {
